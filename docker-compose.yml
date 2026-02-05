@@ -1,0 +1,54 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: salefunnel_app
+    restart: unless-stopped
+    working_dir: /var/www
+    volumes:
+      - ./:/var/www
+    networks:
+      - salefunnel
+    depends_on:
+      - db
+
+  nginx:
+    image: nginx:alpine
+    container_name: salefunnel_nginx
+    restart: unless-stopped
+    ports:
+      - "8000:80"
+    volumes:
+      - ./:/var/www
+      - ./docker/nginx:/etc/nginx/conf.d
+    networks:
+      - salefunnel
+    depends_on:
+      - app
+
+  db:
+    image: mysql:8.0
+    container_name: salefunnel_db
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: salefunnel
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_PASSWORD: root
+      MYSQL_USER: salefunnel
+    volumes:
+      - dbdata:/var/lib/mysql
+    ports:
+      - "3307:3306"
+    networks:
+      - salefunnel
+
+networks:
+  salefunnel:
+    driver: bridge
+
+volumes:
+  dbdata:
+    driver: local
