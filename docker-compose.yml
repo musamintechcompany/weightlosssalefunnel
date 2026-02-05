@@ -19,8 +19,8 @@ services:
     image: nginx:alpine
     container_name: salefunnel_nginx
     restart: unless-stopped
-    ports:
-      - "8000:80"
+    expose:
+      - "80"
     volumes:
       - ./:/var/www
       - ./docker/nginx:/etc/nginx/conf.d
@@ -40,8 +40,8 @@ services:
       MYSQL_USER: salefunnel
     volumes:
       - dbdata:/var/lib/mysql
-    ports:
-      - "3307:3306"
+    expose:
+      - "3306"
     networks:
       - salefunnel
 
